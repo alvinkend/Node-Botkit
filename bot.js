@@ -1,0 +1,32 @@
+
+
+
+const { Botkit } = require('botkit');
+const { TelegramAdapter, TelegramEventTypeMiddleware } = require('botkit-adapter-telegram');
+
+
+require('dotenv').config();
+
+const adapter = new TelegramAdapter({
+  access_token: process.env.TOKEN,
+  webhook_url_host_name: process.env.HOST
+});
+ 
+adapter.use(new TelegramEventTypeMiddleware());
+
+const controller = new Botkit({
+  //webhook_uri: '/' + process.env.TOKEN,
+  //hostname: process.env.HOST,
+  adapter: adapter
+});
+
+
+// Once the bot has booted up its internal services, you can use them to do stuff.
+controller.ready(() => {
+  // load traditional developer-created local custom feature modules
+  controller.loadModules(__dirname + '/features');
+});
+
+controller.webserver.get('/', (req, res) => {
+  res.send(`This app is running Botkit ${ controller.version }.`);
+});
